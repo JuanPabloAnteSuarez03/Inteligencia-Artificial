@@ -66,22 +66,22 @@ def encontrar_camino_mas_corto(matriz):
         mejor_distancia = float('inf')
         
         for fila, columna in movimientos:
-            if (fila, columna) in movimientos_realizados:  # Verificar si el movimiento ya se ha realizado
+            if (fila, columna) in movimientos_realizados:  
                 continue
             distancia = calcular_distancia(fila, columna)
             if distancia < mejor_distancia:
                 mejor_movimiento = (fila, columna)
                 mejor_distancia = distancia
         matriz[primer_mov[0]][primer_mov[1]] = 0
-        if mejor_movimiento is None:  # Si no hay movimientos nuevos disponibles, la rata está atrapada
+        if mejor_movimiento is None: 
             print("La rata está atrapada")
             return
         
-        if movimientos_realizados:  # Si hay movimientos realizados, borrar el último movimiento de la rata
+        if movimientos_realizados: 
             ultimo_movimiento = movimientos_realizados[-1]
-            matriz[ultimo_movimiento[0]][ultimo_movimiento[1]] = 0  # Sustituir el último movimiento por 0
+            matriz[ultimo_movimiento[0]][ultimo_movimiento[1]] = 0  
         
-        movimientos_realizados.append(mejor_movimiento)  # Agregar el nuevo movimiento a la lista de movimientos realizados
+        movimientos_realizados.append(mejor_movimiento)  
 
         if matriz[mejor_movimiento[0]][mejor_movimiento[1]] == 3:
             print("La rata ha llegado al queso.")
@@ -90,7 +90,7 @@ def encontrar_camino_mas_corto(matriz):
             movimientos_realizados.append(mejor_movimiento)
             return 
         
-        matriz[mejor_movimiento[0]][mejor_movimiento[1]] = 1  # Mover la rata
+        matriz[mejor_movimiento[0]][mejor_movimiento[1]] = 1  
         
         print()
         imprimir_tablero(matriz)
