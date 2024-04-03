@@ -1,4 +1,6 @@
 import math
+import time
+import tkinter as tk
 
 def encontrar_fila_mandalorian(matriz):
     for fila_index, fila in enumerate(matriz):
@@ -11,7 +13,7 @@ def encontrar_columna_mandalorian(matriz):
     for fila in matriz:
         for columna_index, elemento in enumerate(fila):
             if elemento == 2:
-                columna_mandalorian= columna_index
+                columna_mandalorian = columna_index
     return columna_mandalorian
 
 def encontrar_fila_grogu(matriz):
@@ -31,19 +33,15 @@ def encontrar_columna_grogu(matriz):
 def calcular_distancia(fila, columna):
     return math.sqrt((pow((encontrar_fila_grogu(matriz) + 1) - (fila + 1),2) + (pow((encontrar_columna_grogu(matriz) + 1) - (columna + 1),2))))
 
-def imprimir_tablero(matriz):
-    for fila in matriz:
-        print(' '.join(map(str, fila)))
-
 def movimientos_posibles(matriz):
     movimientos = []
-    if encontrar_fila_mandalorian(matriz) > 0 and matriz[encontrar_fila_mandalorian(matriz) - 1][encontrar_columna_mandalorian(matriz)] !=1: # Mover Arriba
+    if encontrar_fila_mandalorian(matriz) > 0 and matriz[encontrar_fila_mandalorian(matriz) - 1][encontrar_columna_mandalorian(matriz)] != 1: # Mover Arriba
         movimientos.append((encontrar_fila_mandalorian(matriz) - 1, encontrar_columna_mandalorian(matriz)))
     if encontrar_fila_mandalorian(matriz) < len(matriz) - 1 and matriz[encontrar_fila_mandalorian(matriz) + 1][encontrar_columna_mandalorian(matriz)] != 1:  # Mover Abajo
         movimientos.append((encontrar_fila_mandalorian(matriz) + 1, encontrar_columna_mandalorian(matriz)))
-    if encontrar_columna_mandalorian(matriz) > 0 and matriz[encontrar_fila_mandalorian(matriz)][encontrar_columna_mandalorian(matriz) - 1] !=1:  # Mover Izquierda
+    if encontrar_columna_mandalorian(matriz) > 0 and matriz[encontrar_fila_mandalorian(matriz)][encontrar_columna_mandalorian(matriz) - 1] != 1:  # Mover Izquierda
         movimientos.append((encontrar_fila_mandalorian(matriz), encontrar_columna_mandalorian(matriz) - 1))
-    if encontrar_columna_mandalorian(matriz) < len(matriz) - 1 and matriz[encontrar_fila_mandalorian(matriz)][encontrar_columna_mandalorian(matriz) + 1] !=1:  # Mover Derecha
+    if encontrar_columna_mandalorian(matriz) < len(matriz) - 1 and matriz[encontrar_fila_mandalorian(matriz)][encontrar_columna_mandalorian(matriz) + 1] != 1:  # Mover Derecha
         movimientos.append((encontrar_fila_mandalorian(matriz), encontrar_columna_mandalorian(matriz) + 1))
     return movimientos
 
@@ -52,7 +50,7 @@ def mover(matriz, posicion):
     nueva_matriz[posicion[0]][posicion[1]] = 2
     return nueva_matriz
 
-def encontrar_camino_mas_corto(matriz):
+def encontrar_camino_mas_corto(matriz, canvas, root):
     movimientos_realizados = []  
     primer_mov = (encontrar_fila_mandalorian(matriz), encontrar_columna_mandalorian(matriz))
     movimientos_realizados.append(primer_mov)
@@ -111,7 +109,10 @@ def encontrar_camino_mas_corto(matriz):
             print("El costo total del recorrido es:", costo_total_movimiento)  # Mostrar el costo total
             print("Numero de pasos", contador_pasos)
             print("Estado nave", paso_por_nave)
-            movimientos_realizados.append(mejor_movimiento)
+            matriz[mejor_movimiento[0]][mejor_movimiento[1]] = 6  # Cambiar el color de Grogu a naranja
+            actualizar_canvas(canvas, matriz)
+            root.update()
+            time.sleep(1)  # Añadir un retraso para que la animación sea visible
             return 
         
         if matriz[mejor_movimiento[0]][mejor_movimiento[1]] == 3:
@@ -121,14 +122,37 @@ def encontrar_camino_mas_corto(matriz):
         else:
             paso_por_enemigo =  False
 
-
         matriz[mejor_movimiento[0]][mejor_movimiento[1]] = 2  
         
-        print()
-        imprimir_tablero(matriz)
-        print()
-        print(movimientos_realizados[1:])
+        # Actualizar la interfaz gráfica
+        actualizar_canvas(canvas, matriz)
+        root.update()
+        time.sleep(0.5)  # Añadir un retraso para que la animación sea visible
 
+def actualizar_canvas(canvas, matriz):
+    canvas.delete("all")
+    for i, fila in enumerate(matriz):
+        for j, elemento in enumerate(fila):
+            color = "white"
+            if elemento == 1:
+                color = "black"
+            elif elemento == 2:
+                color = "blue"
+            elif elemento == 3:
+                color = "gray"
+            elif elemento == 4:
+                color = "red"
+            elif elemento == 5:
+                color = "green"
+            elif elemento == 6:
+                color = "orange"  # Cambiar el color de Grogu a naranja
+            canvas.create_rectangle(j * 50, i * 50, (j + 1) * 50, (i + 1) * 50, fill=color)
+
+# Crear la ventana y el lienzo
+root = tk.Tk()
+root.title("Movimiento de Mando")
+canvas = tk.Canvas(root, width=500, height=500)
+canvas.pack()
 
 matriz = [
     [0, 0, 0, 0, 0, 1, 1, 0, 0, 5],
@@ -143,5 +167,6 @@ matriz = [
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 1]
 ]
 
+encontrar_camino_mas_corto(matriz, canvas, root)
 
-encontrar_camino_mas_corto(matriz)
+root.mainloop()
