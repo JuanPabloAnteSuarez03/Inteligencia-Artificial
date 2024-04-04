@@ -11,10 +11,10 @@ class Grogu:
         self.columna = columna
 
 
-# Ejemplo de uso
-grogu = Grogu(0, 9)  # Supongamos que Grogu está en la fila 0, columna 9
-print("Posición inicial de Grogu:", grogu.get_posicion())
+# # Ejemplo de uso
+# grogu = Grogu(0, 9)  # Supongamos que Grogu está en la fila 0, columna 9
+# print("Posición inicial de Grogu:", grogu.get_posicion())
 
-# Moviendo a Grogu a una nueva posición
-grogu.set_posicion(5, 5)
-print("Nueva posición de Grogu:", grogu.get_posicion())
+# # Moviendo a Grogu a una nueva posición
+# grogu.set_posicion(5, 5)
+# print("Nueva posición de Grogu:", grogu.get_posicion())

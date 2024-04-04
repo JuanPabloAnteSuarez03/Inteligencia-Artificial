@@ -24,11 +24,11 @@ class Mando:
 
 
 # Ejemplo de uso
-mando = Mando(3, 0)  # Supongamos que Mando comienza en la fila 3, columna 0
-print("Posición inicial de Mando:", mando.get_posicion())
+# mando = Mando(3, 0)  # Supongamos que Mando comienza en la fila 3, columna 0
+# print("Posición inicial de Mando:", mando.get_posicion())
 
-mando.mover_abajo()
-print("Mando se mueve hacia abajo. Nueva posición:", mando.get_posicion())
+# mando.mover_abajo()
+# print("Mando se mueve hacia abajo. Nueva posición:", mando.get_posicion())
 
-mando.mover_derecha()
-print("Mando se mueve hacia la derecha. Nueva posición:", mando.get_posicion())
+# mando.mover_derecha()
+# print("Mando se mueve hacia la derecha. Nueva posición:", mando.get_posicion())
