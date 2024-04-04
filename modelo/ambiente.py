@@ -51,5 +51,34 @@ class Ambiente:
 
 # Ejemplo de uso
 ambiente = Ambiente()
-ambiente.cargar_desde_archivo('C:/Users/jpant/OneDrive/Desktop/Universidad/Inteligencia Artificial/modelo/ambiente.txt')
+ambiente.cargar_desde_archivo('C:/Users/nicol/OneDrive/Escritorio/inteligencia/Inteligencia-Artificial/modelo/ambiente.txt')
 ambiente.mostrar_ambiente()
+
+
+nave = ambiente.naves
+grogu = ambiente.grogu
+manda = ambiente.mando
+enemigos = ambiente.enemigos
+
+enemigo1 = enemigos[0]
+enemigo2 = enemigos[1]
+enemigo3 = enemigos[2]
+enemigo4 = enemigos[3]
+enemigo5 = enemigos[4]
+
+nave1 = nave[0]
+
+
+
+print ( "nave", nave1.get_posicion())
+print ( "grogu", grogu.get_posicion())
+print ( "mando", manda.get_posicion())
+print ( "enemigo 1", enemigo1.get_posicion())
+print ( "enemigo 2", enemigo2.get_posicion())
+print ( "enemigo 3", enemigo3.get_posicion())
+print ( "enemigo 4", enemigo4.get_posicion())
+print ( "enemigo 5", enemigo5.get_posicion())
+
+
+
+
