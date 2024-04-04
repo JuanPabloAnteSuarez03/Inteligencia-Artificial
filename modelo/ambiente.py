@@ -2,9 +2,8 @@ from nave import *
 from enemigo import *
 from grogu import *
 from mando import *
-from anytree import Node, RenderTree
-jesucris = Node("jesucristo")
-hola = Node("hola", parent = jesucris)
+from arbol import *
+
 class Ambiente:
     def __init__(self):
         self.matriz = [[0] * 10 for _ in range(10)]
@@ -53,25 +52,25 @@ class Ambiente:
 
         return nuevo_ambiente
     
-# Ejemplo de uso
-ambiente = Ambiente()
-ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-ambiente.asignar_objetos()
-ambiente.mostrar_ambiente()
-print()
-# Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
+# # Ejemplo de uso
+# ambiente = Ambiente()
+# ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+# ambiente.asignar_objetos()
+# ambiente.mostrar_ambiente()
+# print()
+# # Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
-# Obtenemos los movimientos posibles para el Mando en la posición actual
-movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
+# # Obtenemos los movimientos posibles para el Mando en la posición actual
+# movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
 
-# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
-accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
+# # Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
+# accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
 
-# Aplicamos la acción y obtenemos un nuevo estado del ambiente
-nuevo_ambiente = ambiente.transicion(accion)
+# # Aplicamos la acción y obtenemos un nuevo estado del ambiente
+# nuevo_ambiente = ambiente.transicion(accion)
 
-# Ahora podemos verificar el estado del nuevo ambiente
-nuevo_ambiente.mostrar_ambiente()
+# # Ahora podemos verificar el estado del nuevo ambiente
+# nuevo_ambiente.mostrar_ambiente()
 
 
 # nave = ambiente.naves
