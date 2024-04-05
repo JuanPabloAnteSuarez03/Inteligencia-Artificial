@@ -7,7 +7,6 @@ from arbol import *
 class Ambiente:
     def __init__(self):
         self.matriz = [[0] * 10 for _ in range(10)]
-        self.matriz = None
         self.mando = None
         self.grogu = None
         self.naves = []
@@ -29,6 +28,15 @@ class Ambiente:
                 elif valor == 4:  # Enemigo
                     self.enemigos.append(Enemigo(fila_index, columna_index))
     
+    def copy(self):
+        copia = Ambiente()
+        copia.matriz = [fila[:] for fila in self.matriz]
+        copia.mando = Mando(self.mando.fila, self.mando.columna) if self.mando else None
+        copia.grogu = Grogu(self.grogu.fila, self.grogu.columna) if self.grogu else None
+        copia.naves = [Nave(nave.fila, nave.columna) for nave in self.naves]
+        copia.enemigos = [Enemigo(enemigo.fila, enemigo.columna) for enemigo in self.enemigos]
+        return copia
+
     def get_casilla(self, fila, columna):
         return self.matriz[fila][columna]
     
@@ -37,24 +45,16 @@ class Ambiente:
             print(' '.join(map(str, fila)))
 
     def transicion(self, accion):
-        # Construir una nueva matriz con las posiciones actualizadas
-        nueva_matriz = [fila[:] for fila in self.matriz]
         nueva_fila, nueva_columna = accion[0], accion[1]
-        nueva_matriz[self.mando.fila][self.mando.columna] = 0  # Limpiar la posición anterior del Mando
-        nueva_matriz[nueva_fila][nueva_columna] = 2  # Colocar al Mando en la nueva posición
+        self.matriz[self.mando.fila][self.mando.columna] = 0  # Limpiar la posición anterior del Mando
+        self.matriz[nueva_fila][nueva_columna] = 2  # Colocar al Mando en la nueva posición
+        self.mando.fila = nueva_fila  # Actualizar la fila del Mando
+        self.mando.columna = nueva_columna  # Actualizar la columna del Mando
 
-        # Crear un nuevo objeto de ambiente con la nueva matriz
-        nuevo_ambiente = Ambiente()
-        nuevo_ambiente.matriz = nueva_matriz
-
-        # Asignar los objetos en las nuevas posiciones
-        nuevo_ambiente.asignar_objetos()
-
-        return nuevo_ambiente
     
 # # Ejemplo de uso
 # ambiente = Ambiente()
-# ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+# ambiente.cargar_desde_archivo(r'modelo\ambientebasico.txt')
 # ambiente.asignar_objetos()
 # ambiente.mostrar_ambiente()
 # print()
@@ -67,10 +67,10 @@ class Ambiente:
 # accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
 
 # # Aplicamos la acción y obtenemos un nuevo estado del ambiente
-# nuevo_ambiente = ambiente.transicion(accion)
-
+# ambiente.transicion(accion)
+# print(type(ambiente.grogu))
 # # Ahora podemos verificar el estado del nuevo ambiente
-# nuevo_ambiente.mostrar_ambiente()
+# ambiente.mostrar_ambiente()
 
 
 # nave = ambiente.naves

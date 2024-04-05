@@ -2,40 +2,55 @@ import time
 from ambiente import *
 from arbol import *
 
+def es_nodo_meta(nodo, objetivo):
+    ambiente1 = nodo.estado
+    mando1 = ambiente1.mando
+    posicion_mando = mando1.get_posicion()  # Obtener la posición actual del Mando
+    posicion_objetivo = (objetivo.fila, objetivo.columna)  # Obtener la posición objetivo (Grogu)
+    
+    # Verificar si la posición del Mando coincide con la posición objetivo
+    return posicion_mando == posicion_objetivo
+
+def reconstruir_camino(nodo):
+    camino = []
+    while nodo.padre is not None:
+        camino.append(nodo.operador)
+        nodo = nodo.padre
+    camino.reverse()  # Invertir el camino para obtener el orden correcto
+    return camino
+
+
 def busqueda_preferente_por_profundidad(problema):
     pila = [Nodo(problema)]
-    
+    nodos_visitados = []
+
     while pila:
-        if not pila:
-            return "Falla"
-        
+
         n = pila.pop()
-        
-        if es_nodo_meta(n):
-            return "Solución encontrada"
+        profundidad_actual = n.profundidad
+        grogu = problema.grogu
+        if es_nodo_meta(n, grogu):
+            return reconstruir_camino(n), "Se encontró"
         
         # Expansión del nodo y agregar todos sus hijos a la pila
-        hijos = expandir_nodo(n)
-        for hijo in hijos:
-            pila.append(hijo)
-    
+        movimientos_posibles = n.estado.mando.get_movimientos_posibles(n.estado.matriz)
+        print(movimientos_posibles)
+        for movimiento in movimientos_posibles:
+            padre = n
+            nueva_fila, nueva_columna = movimiento
+            n.estado.transicion((nueva_fila, nueva_columna))
+            #n.estado.mostrar_ambiente()
+            if n in nodos_visitados:
+                print("hola")
+                continue
+            nuevo_nodo = Nodo(n.estado, padre, movimiento, profundidad_actual + 1)
+            nodos_visitados.append(nuevo_nodo)
+            pila.append(nuevo_nodo)
+            print(reconstruir_camino(n))
     return "Falla"
 
-
-
-# Ejemplo de uso:
-ambiente = Ambiente()  # Crear un ambiente
-ambiente.cargar_desde_archivo(r'modelo\ambientebasico.txt')  # Cargar el ambiente desde un archivo
-ambiente.asignar_objetos()  # Asignar los objetos en el ambiente
-
-# Suponiendo que queremos encontrar un camino desde la posición actual del Mando hasta Grogu
-camino = dfs(ambiente, ambiente.mando, ambiente.grogu)
-print(camino)
-
-if camino[0]:
-    print("Camino encontrado:")
-    for paso in camino:
-        print(paso)
-else:
-    print("No se encontró un camino hacia el objetivo.")
-
+# Definir el problema
+ambiente = Ambiente()
+ambiente.cargar_desde_archivo(r'modelo\ambientebasico.txt')
+ambiente.asignar_objetos()
+print(busqueda_preferente_por_profundidad(ambiente))
