@@ -1,0 +1,9 @@
+Django
+django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
+django-environ
+psycopg2-binary
+pandas
+setuptools
+coreapi

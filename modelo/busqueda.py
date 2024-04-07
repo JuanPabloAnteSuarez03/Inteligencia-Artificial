@@ -11,6 +11,18 @@ def es_nodo_meta(nodo, objetivo):
     # Verificar si la posición del Mando coincide con la posición objetivo
     return posicion_mando == posicion_objetivo
 
+def evitar_ciclo(nodo):
+    if nodo.profundidad <= 1:
+        return False
+    antecesor = nodo.padre.padre
+    
+    while(antecesor != None):
+        if antecesor.estado == nodo.estado:
+            return True
+        antecesor = antecesor.padre
+
+    return False
+
 def reconstruir_camino(nodo):
     camino = []
     while nodo.padre is not None:
@@ -19,7 +31,7 @@ def reconstruir_camino(nodo):
     camino.reverse()  # Invertir el camino para obtener el orden correcto
     return camino
 
-
+ 
 def busqueda_preferente_por_profundidad(problema):
     pila = [Nodo(problema)]
     nodos_visitados = []
@@ -40,8 +52,8 @@ def busqueda_preferente_por_profundidad(problema):
             nueva_fila, nueva_columna = movimiento
             n.estado.transicion((nueva_fila, nueva_columna))
             #n.estado.mostrar_ambiente()
-            if n in nodos_visitados:
-                print("hola")
+            if evitar_ciclo(n):
+                print("evite un ciclo :)")
                 continue
             nuevo_nodo = Nodo(n.estado, padre, movimiento, profundidad_actual + 1)
             nodos_visitados.append(nuevo_nodo)

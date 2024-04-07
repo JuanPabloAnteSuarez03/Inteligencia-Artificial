@@ -25,14 +25,15 @@ class Mando:
     def get_movimientos_posibles(self, matriz):
         movimientos = []
 
+
+        if self.columna > 0 and matriz[self.fila][self.columna - 1] != 1:  # Mover Izquierda
+            movimientos.append((self.fila, self.columna - 1))
         if self.fila > 0 and matriz[self.fila - 1][self.columna] != 1:  # Mover Arriba
             movimientos.append((self.fila - 1, self.columna))
         if self.fila < len(matriz) - 1 and matriz[self.fila + 1][self.columna] != 1:  # Mover Abajo
-            movimientos.append((self.fila + 1, self.columna))
+            movimientos.append((self.fila + 1, self.columna))    
         if self.columna < len(matriz[0]) - 1 and matriz[self.fila][self.columna + 1] != 1:  # Mover Derecha
-            movimientos.append((self.fila, self.columna + 1))
-        if self.columna > 0 and matriz[self.fila][self.columna - 1] != 1:  # Mover Izquierda
-            movimientos.append((self.fila, self.columna - 1))
+            movimientos.append((self.fila, self.columna + 1))   
 
         return movimientos
 
