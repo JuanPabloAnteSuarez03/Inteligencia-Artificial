@@ -32,7 +32,8 @@ def evitar_ciclos(nodo):
 
     return False
 
-def busqueda_dfs(ambiente):
+def busqueda_profundidad(ambiente):
+    inicio = time.time()
     nodo = Nodo(ambiente)
     stack = [nodo]  # Usar una pila para almacenar nodos a explorar
     explorados = set()  # Conjunto para almacenar estados explorados
@@ -42,7 +43,8 @@ def busqueda_dfs(ambiente):
         nodo_actual = stack.pop()  # Obtener el nodo más reciente de la pila
         
         if es_nodo_meta(nodo_actual):
-            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos
+            tiempo_total = time.time() - inicio
+            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total
          
         estado_actual = str(nodo_actual.estado.matriz)  # Convertir la matriz a una cadena para usarla como clave
         
@@ -64,16 +66,17 @@ def busqueda_dfs(ambiente):
 
 
 def busqueda_amplitud(ambiente):
+    inicio = time.time()
     nodo = Nodo(ambiente)
     queue = deque([nodo])  # Usar una cola para almacenar nodos a explorar
     explorados = set()  # Conjunto para almacenar estados explorados
-    nodos_expandidos = []  # Lista para almacenar los nodos expandidos
-    
+    nodos_expandidos = []  # Lista para almacenar los nodos expandidos 
     while queue:
         nodo_actual = queue.popleft()  # Obtener el nodo más antiguo de la cola
         
         if es_nodo_meta(nodo_actual):
-            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos
+            tiempo_total = time.time() - inicio
+            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total
          
         estado_actual = str(nodo_actual.estado.matriz)  # Convertir la matriz a una cadena para usarla como clave
         
@@ -98,12 +101,11 @@ ambiente = Ambiente()
 ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
 
 # Realizar la búsqueda DFS
-inicio = time.time()
-camino, mensaje, nodos_expandidos = busqueda_amplitud(ambiente)  # Modifica esta línea
-tiempo_total = time.time() - inicio
+camino, mensaje, nodos_expandidos, profundidad , tiempo_total= busqueda_profundidad(ambiente)  # Modifica esta línea
 
 print("Camino encontrado:", camino)
 print("Mensaje:", mensaje)
 print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
 print("Tiempo de ejecución:", tiempo_total)
+print("Profundidad:", profundidad)
 
