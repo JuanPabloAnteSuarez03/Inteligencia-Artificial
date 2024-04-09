@@ -2,14 +2,13 @@ import time
 from ambiente import *
 from arbol import *
 
-def es_nodo_meta(nodo, objetivo):
-    ambiente1 = nodo.estado
-    mando1 = ambiente1.mando
-    posicion_mando = mando1.get_posicion()  # Obtener la posición actual del Mando
-    posicion_objetivo = (objetivo.fila, objetivo.columna)  # Obtener la posición objetivo (Grogu)
+def es_nodo_meta(nodo):
+    ambiente = nodo.estado
+    mando_posicion = ambiente.mando.get_posicion()
+    grogu_posicion = ambiente.grogu.get_posicion()
     
-    # Verificar si la posición del Mando coincide con la posición objetivo
-    return posicion_mando == posicion_objetivo
+    # Verificar si la posición del Mando coincide con la posición de Grogu
+    return mando_posicion == grogu_posicion
 
 def reconstruir_camino(nodo):
     camino = []
@@ -19,38 +18,50 @@ def reconstruir_camino(nodo):
     camino.reverse()  # Invertir el camino para obtener el orden correcto
     return camino
 
+def evitar_ciclo(nodo):
+    if nodo.profundidad <= 1:
+        return False
+    antecesor = nodo.padre.padre
 
-def busqueda_preferente_por_profundidad(problema):
-    pila = [Nodo(problema)]
-    nodos_visitados = []
+    while antecesor is not None:
+        if antecesor.estado == nodo.estado:
+            return True
+        antecesor = antecesor.padre
 
-    while pila:
+    return False
 
-        n = pila.pop()
-        profundidad_actual = n.profundidad
-        grogu = problema.grogu
-        if es_nodo_meta(n, grogu):
-            return reconstruir_camino(n), "Se encontró"
+def busqueda_dfs(ambiente):
+    nodo = Nodo(ambiente)
+    stack = [nodo]  # Usar una pila para almacenar nodos a explorar
+    
+    while stack:
+        nodo_actual = stack.pop()  # Obtener el nodo más reciente de la pila
         
-        # Expansión del nodo y agregar todos sus hijos a la pila
-        movimientos_posibles = n.estado.mando.get_movimientos_posibles(n.estado.matriz)
-        print(movimientos_posibles)
-        for movimiento in movimientos_posibles:
-            padre = n
-            nueva_fila, nueva_columna = movimiento
-            n.estado.transicion((nueva_fila, nueva_columna))
-            #n.estado.mostrar_ambiente()
-            if n in nodos_visitados:
-                print("hola")
-                continue
-            nuevo_nodo = Nodo(n.estado, padre, movimiento, profundidad_actual + 1)
-            nodos_visitados.append(nuevo_nodo)
-            pila.append(nuevo_nodo)
-            print(reconstruir_camino(n))
-    return "Falla"
+        if es_nodo_meta(nodo_actual):
+            return reconstruir_camino(nodo_actual), "Se encontró"
+        
+        if nodo_actual.profundidad >= 100:  # Evitar bucles infinitos
+            continue
+        
+        for accion in nodo_actual.estado.mando.get_movimientos_posibles(nodo_actual.estado.matriz):
+            nuevo_estado = nodo_actual.estado.copy()
+            nuevo_estado.transicion(accion)
+            nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1)
+            
+            if not evitar_ciclo(nuevo_nodo):
+                stack.append(nuevo_nodo)  # Agregar el nuevo nodo a la pila
+    
+    return [], "No se encontró"
 
-# Definir el problema
+# Cargar el ambiente desde el archivo
 ambiente = Ambiente()
 ambiente.cargar_desde_archivo(r'modelo\ambientebasico.txt')
-ambiente.asignar_objetos()
-print(busqueda_preferente_por_profundidad(ambiente))
+
+# Realizar la búsqueda DFS
+inicio = time.time()
+camino, mensaje = busqueda_dfs(ambiente)
+tiempo_total = time.time() - inicio
+
+print("Camino encontrado:", camino)
+print("Mensaje:", mensaje)
+print("Tiempo de ejecución:", tiempo_total)

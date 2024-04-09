@@ -15,6 +15,7 @@ class Ambiente:
     def cargar_desde_archivo(self, archivo):
         with open(archivo, 'r') as file:
             self.matriz = [[int(x) for x in line.split()] for line in file.readlines()]
+        self.asignar_objetos()
 
     def asignar_objetos(self):
         for fila_index, fila in enumerate(self.matriz):
@@ -94,7 +95,3 @@ class Ambiente:
 # print ( "enemigo 3", enemigo3.get_posicion())
 # print ( "enemigo 4", enemigo4.get_posicion())
 # print ( "enemigo 5", enemigo5.get_posicion())
-
-
-
-
