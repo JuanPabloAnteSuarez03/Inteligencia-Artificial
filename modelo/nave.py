@@ -22,20 +22,3 @@ class Nave:
     
     def reiniciar_contador_pasos(self):
         self.contador_pasos = 0
-
-
-# # Ejemplo de uso
-# nave = Nave(3, 3)  # Supongamos que la nave está en la fila 3, columna 3
-# print("Posición inicial de la nave:", nave.get_posicion())
-
-# # Mando monta la nave
-# nave.montar_mando()
-# print("¿Mando está montado en la nave?", nave.get_estado())
-
-# # Incrementar el contador de pasos de la nave
-# nave.incrementar_contador_pasos()
-# print("Contador de pasos de la nave:", nave.contador_pasos)
-
-# # Reiniciar el contador de pasos de la nave
-# nave.reiniciar_contador_pasos()
-# print("Contador de pasos de la nave reiniciado:", nave.contador_pasos)
