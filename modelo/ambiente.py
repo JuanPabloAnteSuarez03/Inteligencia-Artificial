@@ -25,9 +25,17 @@ class Ambiente:
                 elif valor == 5:  # Grogu
                     self.grogu = Grogu(fila_index, columna_index)
                 elif valor == 3:  # Nave
-                    self.naves.append(Nave(fila_index, columna_index))
+                    nueva_nave = Nave(fila_index, columna_index)
+                    # Verificar si la nueva nave ya existe en la lista de naves
+                    if not any(nave.get_posicion() == nueva_nave.get_posicion() for nave in self.naves):
+                        self.naves.append(nueva_nave)
                 elif valor == 4:  # Enemigo
-                    self.enemigos.append(Enemigo(fila_index, columna_index))
+                    nuevo_enemigo = Enemigo(fila_index, columna_index)
+                    # Verificar si el nuevo enemigo ya existe en la lista de enemigos
+                    if not any(enemigo.get_posicion() == nuevo_enemigo.get_posicion() for enemigo in self.enemigos):
+                        self.enemigos.append(nuevo_enemigo)
+
+
     
     def copy(self):
         copia = Ambiente()
@@ -53,45 +61,35 @@ class Ambiente:
         self.mando.columna = nueva_columna  # Actualizar la columna del Mando
 
     
-# # Ejemplo de uso
-# ambiente = Ambiente()
-# ambiente.cargar_desde_archivo(r'modelo\ambientebasico.txt')
-# ambiente.asignar_objetos()
-# ambiente.mostrar_ambiente()
-# print()
-# # Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
+# Ejemplo de uso
+ambiente = Ambiente()
+ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+ambiente.asignar_objetos()
+ambiente.mostrar_ambiente()
+print()
+# Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
-# # Obtenemos los movimientos posibles para el Mando en la posición actual
-# movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
+# Obtenemos los movimientos posibles para el Mando en la posición actual
+movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
 
-# # Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
-# accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
+# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
+accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
 
-# # Aplicamos la acción y obtenemos un nuevo estado del ambiente
-# ambiente.transicion(accion)
-# print(type(ambiente.grogu))
-# # Ahora podemos verificar el estado del nuevo ambiente
-# ambiente.mostrar_ambiente()
+# Aplicamos la acción y obtenemos un nuevo estado del ambiente
+ambiente.transicion(accion)
+print(type(ambiente.grogu))
+# Ahora podemos verificar el estado del nuevo ambiente
+ambiente.mostrar_ambiente()
 
 
-# nave = ambiente.naves
-# grogu = ambiente.grogu
-# manda = ambiente.mando
-# enemigos = ambiente.enemigos
+nave = ambiente.naves
+grogu = ambiente.grogu
+manda = ambiente.mando
+enemigos = ambiente.enemigos
 
-# enemigo1 = enemigos[0]
-# enemigo2 = enemigos[1]
-# enemigo3 = enemigos[2]
-# enemigo4 = enemigos[3]
-# enemigo5 = enemigos[4]
-
-# nave1 = nave[0]
-# mando1 = ambiente.mando
-# print ( "nave", nave1.get_posicion())
-# print ( "grogu", grogu.get_posicion())
-# print ( "mando", manda.get_posicion())
-# print ( "enemigo 1", enemigo1.get_posicion())
-# print ( "enemigo 2", enemigo2.get_posicion())
-# print ( "enemigo 3", enemigo3.get_posicion())
-# print ( "enemigo 4", enemigo4.get_posicion())
-# print ( "enemigo 5", enemigo5.get_posicion())
+mando1 = ambiente.mando
+print ( nave)
+print ( "grogu", grogu.get_posicion())
+print ( "mando", manda.get_posicion())
+for enemigo in enemigos:
+    print(enemigo.get_posicion())
