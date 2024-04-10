@@ -91,7 +91,7 @@ def busqueda_profundidad(ambiente):
 def busqueda_amplitud(ambiente):
     inicio = time.time()
     nodo = Nodo(ambiente)
-    queue = PriorityQueue([nodo])  # Usar una cola para almacenar nodos a explorar
+    queue = deque([nodo])  # Usar una cola para almacenar nodos a explorar
     explorados = set()  # Conjunto para almacenar estados explorados
     nodos_expandidos = []  # Lista para almacenar los nodos expandidos 
     while queue:
@@ -119,7 +119,6 @@ def busqueda_amplitud(ambiente):
 
 
 
-from queue import PriorityQueue
 
 def busqueda_costo_uniforme(ambiente):
     inicio = time.time()
@@ -173,11 +172,11 @@ ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
 
 
 # Realizar la búsqueda DFS
-camino, mensaje, nodos_expandidos, profundidad , tiempo_total, costo_total = busqueda_costo_uniforme(ambiente)  # Modifica esta línea
+camino, mensaje, nodos_expandidos, profundidad , tiempo_total, costo = busqueda_costo_uniforme(ambiente)  # Modifica esta línea
 
 print("Camino encontrado:", camino)
 print("Mensaje:", mensaje)
 print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
 print("Tiempo de ejecución:", tiempo_total)
 print("Profundidad:", profundidad)
-print("Costo:", costo_total)
+print("Costo:", costo)
