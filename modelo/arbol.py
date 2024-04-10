@@ -1,11 +1,18 @@
 class Nodo:
-    def __init__(self, estado, padre=None, operador=None, profundidad=0, costo=0):
+    def __init__(self, estado, padre=None, operador=None, profundidad=0, costo=0, contador_pasos=0, paso_por_nave=False, paso_por_enemigo=False):
         self.estado = estado            # Estado del problema en este nodo
         self.padre = padre              # Referencia al nodo padre
         self.operador = operador        # Operador aplicado para generar este nodo
         self.profundidad = profundidad  # Profundidad del nodo en el árbol
         self.costo = costo              # Costo de la ruta desde la raíz hasta este nodo
         self.hijos = []                 # Lista de nodos hijos
+        self.contador_pasos = contador_pasos # Contador de pasos de la nave
+        self.paso_por_nave = paso_por_nave
+        self.paso_por_enemigo = paso_por_enemigo
+
+    def __lt__(self, otro):
+        # Comparar los nodos en función de su costo acumulado
+        return self.costo < otro.costo
 
     def agregar_hijo(self, hijo):
         self.hijos.append(hijo)
