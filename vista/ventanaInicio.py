@@ -11,7 +11,7 @@ class Ui_Busqueda(object):
         self.frame.setGeometry(QtCore.QRect(0, 0, 700, 700))
 
         # Cargar la imagen de fondo y ajustar al tamaño del frame
-        self.background_image = QtGui.QPixmap("vista/fondo.jpg").scaled(self.frame.size())  # Ajustar tamaño
+        self.background_image = QtGui.QPixmap("imagenes/fondo.jpg").scaled(self.frame.size())  # Ajustar tamaño
         self.background_label = QtWidgets.QLabel(self.frame)
         self.background_label.setPixmap(self.background_image)
         self.background_label.setGeometry(QtCore.QRect(0, 0, 700, 700))
