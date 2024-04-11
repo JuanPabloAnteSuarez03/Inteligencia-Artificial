@@ -60,26 +60,7 @@ class Ambiente:
         self.mando.fila = nueva_fila  # Actualizar la fila del Mando
         self.mando.columna = nueva_columna  # Actualizar la columna del Mando
 
-    
-# # Ejemplo de uso
-# ambiente = Ambiente()
-# ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-# ambiente.asignar_objetos()
-# ambiente.mostrar_ambiente()
-# print()
-# # Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
-# # Obtenemos los movimientos posibles para el Mando en la posición actual
-# movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
-
-# # Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
-# accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
-
-# # Aplicamos la acción y obtenemos un nuevo estado del ambiente
-# ambiente.transicion(accion)
-# print(type(ambiente.grogu))
-# # Ahora podemos verificar el estado del nuevo ambiente
-# ambiente.mostrar_ambiente()
 
 
 # nave = ambiente.naves

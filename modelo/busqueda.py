@@ -233,17 +233,37 @@ def busqueda_avara(ambiente):
     
     return [], "No se encontró", nodos_expandidos
 
-# Cargar el ambiente desde el archivo
+
+# Ejemplo de uso
 ambiente = Ambiente()
 ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-#print(heuristica(Nodo(ambiente)))
+ambiente.asignar_objetos()
+# Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
-# Realizar la búsqueda DFS
-camino, mensaje, nodos_expandidos, profundidad , tiempo_total = busqueda_a_estrella(ambiente)  # Modifica esta línea
+# Obtenemos los movimientos posibles para el Mando en la posición actual
+movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
 
-print("Camino encontrado:", camino)
-print("Mensaje:", mensaje)
-print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
-print("Tiempo de ejecución:", tiempo_total)
-print("Profundidad:", profundidad)
-#print("Costo", costo)
+# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
+accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
+
+# Aplicamos la acción y obtenemos un nuevo estado del ambiente
+movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
+for movimiento in movimientos:
+    ambiente.transicion(movimiento)
+    ambiente.mostrar_ambiente()
+    print()
+# Ahora podemos verificar el estado del nuevo ambiente
+# Cargar el ambiente desde el archivo
+# ambiente = Ambiente()
+# ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+# #print(heuristica(Nodo(ambiente)))
+
+# # Realizar la búsqueda DFS
+# camino, mensaje, nodos_expandidos, profundidad , tiempo_total = busqueda_avara(ambiente)  # Modifica esta línea
+
+# print("Camino encontrado:", camino)
+# print("Mensaje:", mensaje)
+# print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
+# print("Tiempo de ejecución:", tiempo_total)
+# print("Profundidad:", profundidad)
+# #print("Costo", costo)
