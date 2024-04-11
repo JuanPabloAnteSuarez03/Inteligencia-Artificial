@@ -163,20 +163,87 @@ def busqueda_costo_uniforme(ambiente):
     return [], "No se encontró", nodos_expandidos
 
 
+def heuristica(nodo):
+    mando_posicion = nodo.estado.mando.get_posicion()
+    grogu_posicion = nodo.estado.grogu.get_posicion()
+    
+    # Obtener los movimientos posibles del Mando
+    movimientos_posibles = nodo.estado.mando.get_movimientos_posibles(nodo.estado.matriz)
+    
+    # Inicializar una lista para almacenar las distancias al objetivo desde cada movimiento posible
+    distancias = []
+    
+    # Calcular la distancia al objetivo desde cada movimiento posible
+    for movimiento in movimientos_posibles:
+        # Copiar el estado actual para simular el movimiento del Mando
+        nuevo_estado = nodo.estado.copy()
+        nuevo_estado.mando.set_posicion(*movimiento)
+        
+        # Verificar si el movimiento es sobre un enemigo
+        if nuevo_estado.matriz[movimiento[0]][movimiento[1]] == 4:
+            # Si es enemigo, agregar una penalización a la distancia
+            distancia_manhattan = abs(movimiento[0] - grogu_posicion[0]) + abs(movimiento[1] - grogu_posicion[1])
+            distancia_manhattan += 5
+        else:
+            # Calcular la distancia manhattan desde este movimiento al objetivo
+            distancia_manhattan = abs(movimiento[0] - grogu_posicion[0]) + abs(movimiento[1] - grogu_posicion[1])
+            
+            # Si en el movimiento hay una nave, dividir la distancia por 2
+            if nuevo_estado.matriz[movimiento[0]][movimiento[1]] == 3:
+                distancia_manhattan /= 2
+        
+        distancias.append(distancia_manhattan)
+    
+    # Devolver la mínima distancia al objetivo
+    return min(distancias)
 
+
+
+
+
+def busqueda_avara(ambiente):
+    inicio = time.time()
+    nodo = Nodo(ambiente)
+    queue = PriorityQueue()  # Usar una cola de prioridad para almacenar nodos a explorar
+    queue.put((heuristica(nodo), nodo))  # Insertar el nodo inicial en la cola de prioridad
+    
+    explorados = set()  # Conjunto para almacenar estados explorados
+    nodos_expandidos = []  # Lista para almacenar los nodos expandidos 
+    
+    while not queue.empty():
+        _, nodo_actual = queue.get()  # Obtener el nodo con la menor heurística de la cola
+        
+        if es_nodo_meta(nodo_actual):
+            tiempo_total = time.time() - inicio
+            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total
+         
+        estado_actual = str(nodo_actual.estado.matriz)  # Convertir la matriz a una cadena para usarla como clave
+        
+        if estado_actual in explorados or evitar_ciclos(nodo_actual):
+            continue  # Evitar nodos ya explorados y ciclos
+        
+        explorados.add(estado_actual)  # Agregar el estado actual al conjunto de explorados
+        nodos_expandidos.append(nodo_actual)  # Agregar el nodo actual a la lista de nodos expandidos
+        
+        for accion in nodo_actual.estado.mando.get_movimientos_posibles(nodo_actual.estado.matriz):
+            nuevo_estado = nodo_actual.estado.copy()
+            nuevo_estado.transicion(accion)
+            nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1)
+            queue.put((heuristica(nuevo_nodo), nuevo_nodo))  # Insertar el nuevo nodo en la cola de prioridad
+    
+    return [], "No se encontró", nodos_expandidos
 
 # Cargar el ambiente desde el archivo
 ambiente = Ambiente()
 ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-
-
+#print(heuristica(Nodo(ambiente)))
 
 # Realizar la búsqueda DFS
-camino, mensaje, nodos_expandidos, profundidad , tiempo_total, costo = busqueda_costo_uniforme(ambiente)  # Modifica esta línea
+camino, mensaje, nodos_expandidos, profundidad , tiempo_total = busqueda_a_estrella(ambiente)  # Modifica esta línea
 
 print("Camino encontrado:", camino)
 print("Mensaje:", mensaje)
 print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
 print("Tiempo de ejecución:", tiempo_total)
 print("Profundidad:", profundidad)
-print("Costo:", costo)
+#print("Costo", costo)
