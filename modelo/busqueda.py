@@ -259,21 +259,22 @@ accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
 movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
 
 
-# Crear una instancia de la clase Cuadricula
-root = tk.Tk()
-cuadricula = Cuadricula(root, width=500, height=500)
+def ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos):
+    # Crear una instancia de la clase Cuadricula
+    root = tk.Tk()
+    cuadricula = Cuadricula(root, width=500, height=500)
 
-# Llama al método para actualizar el lienzo con la nueva matriz del ambiente
-cuadricula.actualizar_canvas(ambiente.matriz)
-
-for movimiento in movimientos:
-    ambiente.transicion(movimiento)
-    ambiente.mostrar_ambiente()
+    # Llama al método para actualizar el lienzo con la nueva matriz del ambiente
     cuadricula.actualizar_canvas(ambiente.matriz)
-    root.update()
-    time.sleep(0.5)
 
-root.mainloop()
+    for movimiento in movimientos:
+        ambiente.transicion(movimiento)
+        ambiente.mostrar_ambiente()
+        cuadricula.actualizar_canvas(ambiente.matriz)
+        root.update()
+        time.sleep(0.5)
+
+    root.mainloop()
 
 # Ahora podemos verificar el estado del nuevo ambiente
 # Cargar el ambiente desde el archivo

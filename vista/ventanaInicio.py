@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'modelo'))
 import tkinter as tk
 from tkinter import messagebox
 from busqueda import *
-
+from cuadricula import *
 import subprocess
 
 class Ui_Busqueda(object):
@@ -113,30 +113,29 @@ class VentanaInicio(QtWidgets.QMainWindow):
 
     def ejecutar_busqueda_profundidad(self):
         movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_profundidad(ambiente)
-        self.mostrar_resultados(movimientos, mensaje, nodos_expandidos, profundidad, tiempo)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
 
     def ejecutar_busqueda_amplitud(self):
         movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_amplitud(ambiente)
-        self.mostrar_resultados(movimientos, mensaje, nodos_expandidos, profundidad, tiempo)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
 
     def ejecutar_busqueda_costo_uniforme(self):
         movimientos, mensaje, nodos_expandidos, profundidad, tiempo, costo = busqueda_costo_uniforme(ambiente)
-        self.mostrar_resultados(movimientos, mensaje, nodos_expandidos, profundidad, tiempo, costo)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo, costo)
 
     def ejecutar_busqueda_avara(self):
         movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_avara(ambiente)
-        self.mostrar_resultados(movimientos, mensaje, nodos_expandidos, profundidad, tiempo)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
 
-    def mostrar_resultados(self, movimientos, mensaje, nodos_expandidos, profundidad, tiempo, costo=None):
+    def mostrar_resultados(self, mensaje, nodos_expandidos, profundidad, tiempo, costo=None):
         resultados = f"Mensaje: {mensaje}\nProfundidad: {profundidad}\nTiempo de ejecución: {tiempo}"
         if costo is not None:
             resultados += f"\nCosto: {costo}"
-        QtWidgets.QMessageBox.information(self, "Resultados", resultados)
-
-# Crear una instancia de Ambiente para usar en las búsquedas
-ambiente = Ambiente()
-ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-ambiente.asignar_objetos()
+        QtWidgets.QMessageBox.information(self, "Resultados", resultados) 
 
 if __name__ == "__main__":
     import sys
