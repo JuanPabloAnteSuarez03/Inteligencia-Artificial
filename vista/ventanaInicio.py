@@ -1,4 +1,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'modelo'))
+
+import tkinter as tk
+from tkinter import messagebox
+from busqueda import *
+from cuadricula import *
 import subprocess
 
 class Ui_Busqueda(object):
@@ -50,7 +58,7 @@ class Ui_Busqueda(object):
         self.boton_a.setGeometry(QtCore.QRect(420, 180, 141, 61))
         self.boton_a.setStyleSheet("background:rgb(255, 255, 255); font-size: 11pt;")
         self.boton_a.setObjectName("boton_a")
-
+        """
         # EJEMPLO"
         self.boton_mando_grogu = QtWidgets.QPushButton(self.frame)
         self.boton_mando_grogu.setGeometry(QtCore.QRect(420, 340, 141, 61))
@@ -58,7 +66,7 @@ class Ui_Busqueda(object):
         self.boton_mando_grogu.setObjectName("boton_mando_grogu")
         self.boton_mando_grogu.setText("Ejemplo")
         self.boton_mando_grogu.clicked.connect(self.abrir_mando_y_grogu)
-
+        """
         Busqueda.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Busqueda)
@@ -76,10 +84,11 @@ class Ui_Busqueda(object):
         self.label_informada.setText(_translate("Busqueda", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; color:white;\">INFORMADA</span></p></body></html>"))
         self.boton_a.setText(_translate("Busqueda", "A*"))
 
-    def abrir_mando_y_grogu(self):
-        # Ejecutar "Mando y Grogu.py" usando subprocess
-        subprocess.Popen(["python", "Mando y Grogu.py"])
+    def abrir_cuadricula(self):
+        # Ejecutar "cuadricula.py" usando subprocess
+        subprocess.Popen(["python", "vista/cuadricula.py"])
 
+"""
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -87,4 +96,50 @@ if __name__ == "__main__":
     ui = Ui_Busqueda()
     ui.setupUi(Busqueda)
     Busqueda.show()
+    sys.exit(app.exec_())
+"""
+
+class VentanaInicio(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Ventana de Inicio")
+        self.ui = Ui_Busqueda()
+        self.ui.setupUi(self)
+
+        self.ui.boton_profundidad.clicked.connect(self.ejecutar_busqueda_profundidad)
+        self.ui.boton_amplitud.clicked.connect(self.ejecutar_busqueda_amplitud)
+        self.ui.boton_costo.clicked.connect(self.ejecutar_busqueda_costo_uniforme)
+        self.ui.boton_avara.clicked.connect(self.ejecutar_busqueda_avara)
+
+    def ejecutar_busqueda_profundidad(self):
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_profundidad(ambiente)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
+
+    def ejecutar_busqueda_amplitud(self):
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_amplitud(ambiente)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
+
+    def ejecutar_busqueda_costo_uniforme(self):
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo, costo = busqueda_costo_uniforme(ambiente)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo, costo)
+
+    def ejecutar_busqueda_avara(self):
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_avara(ambiente)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
+
+    def mostrar_resultados(self, mensaje, nodos_expandidos, profundidad, tiempo, costo=None):
+        resultados = f"Mensaje: {mensaje}\nProfundidad: {profundidad}\nTiempo de ejecución: {tiempo}"
+        if costo is not None:
+            resultados += f"\nCosto: {costo}"
+        QtWidgets.QMessageBox.information(self, "Resultados", resultados) 
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    ventana_inicio = VentanaInicio()
+    ventana_inicio.show()
     sys.exit(app.exec_())
