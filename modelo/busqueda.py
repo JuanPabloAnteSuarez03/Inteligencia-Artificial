@@ -164,40 +164,45 @@ def busqueda_costo_uniforme(ambiente):
 
 
 def heuristica(nodo):
-    mando_posicion = nodo.estado.mando.get_posicion()
-    grogu_posicion = nodo.estado.grogu.get_posicion()
+    distancia_manhattan_mando_grogu = abs(nodo.estado.mando.fila - nodo.estado.grogu.fila) + abs(nodo.estado.mando.columna - nodo.estado.grogu.columna)
+    naves = nodo.estado.naves
+    enemigos = nodo.estado.enemigos
+    distancias_nave_grogu = []
+    distancias_nave_mando = []
+    distancias_enemigos_mando = []
     
-    # Obtener los movimientos posibles del Mando
-    movimientos_posibles = nodo.estado.mando.get_movimientos_posibles(nodo.estado.matriz)
-    
-    # Inicializar una lista para almacenar las distancias al objetivo desde cada movimiento posible
-    distancias = []
-    
-    # Calcular la distancia al objetivo desde cada movimiento posible
-    for movimiento in movimientos_posibles:
-        # Copiar el estado actual para simular el movimiento del Mando
-        nuevo_estado = nodo.estado.copy()
-        nuevo_estado.mando.set_posicion(*movimiento)
+    if enemigos or naves:    
+        if nodo.estado.naves:
+            for nave in naves:
+                distancia_manhattan_naves_grogu = abs(nave.fila - nodo.estado.grogu.fila) + abs(nave.columna - nodo.estado.grogu.columna)
+                distancia_manhattan_naves_mando = abs(nave.fila - nodo.estado.mando.fila) + abs(nave.columna - nodo.estado.mando.columna)
+                distancias_nave_grogu.append(distancia_manhattan_naves_grogu)
+                distancias_nave_mando.append(distancia_manhattan_naves_mando)
+                
+            for enemigo in enemigos:
+                distancia_manhattan_enemigos_mando = abs(enemigo.fila - nodo.estado.mando.fila) + abs(enemigo.columna - nodo.estado.mando.columna)
+                # Penalizar si el nodo está sobre un enemigo
+                if enemigo.fila == nodo.estado.mando.fila and enemigo.columna == nodo.estado.mando.columna:
+                    distancias_enemigos_mando.append(distancia_manhattan_enemigos_mando + 10)  # Incrementar la penalización
+                else:
+                    distancias_enemigos_mando.append(distancia_manhattan_enemigos_mando)
+                    
+            if min(distancias_enemigos_mando) <= min(distancias_nave_mando):
+                distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu) + 5          
+            elif min(distancias_nave_grogu) <= 10:
+                distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu) * 0.5
+            else:
+                distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu) - 5
+            return distancia_desde_nave
         
-        # Verificar si el movimiento es sobre un enemigo
-        if nuevo_estado.matriz[movimiento[0]][movimiento[1]] == 4:
-            # Si es enemigo, agregar una penalización a la distancia
-            distancia_manhattan = abs(movimiento[0] - grogu_posicion[0]) + abs(movimiento[1] - grogu_posicion[1])
-            distancia_manhattan += 5
-        else:
-            # Calcular la distancia manhattan desde este movimiento al objetivo
-            distancia_manhattan = abs(movimiento[0] - grogu_posicion[0]) + abs(movimiento[1] - grogu_posicion[1])
-            
-            # Si en el movimiento hay una nave, dividir la distancia por 2
-            if nuevo_estado.matriz[movimiento[0]][movimiento[1]] == 3:
-                distancia_manhattan /= 2
-        
-        distancias.append(distancia_manhattan)
+        elif es_nave(nodo):
+            if distancia_manhattan_mando_grogu <= 10:
+                distancia_desde_nave = distancia_manhattan_mando_grogu * 0.5
+            else:
+                distancia_desde_nave = distancia_manhattan_mando_grogu - 5
+            return distancia_desde_nave
     
-    # Devolver la mínima distancia al objetivo
-    return min(distancias)
-
-
+    return distancia_manhattan_mando_grogu
 
 
 
@@ -233,37 +238,79 @@ def busqueda_avara(ambiente):
     
     return [], "No se encontró", nodos_expandidos
 
+def a_estrella(ambiente):
+    inicio = time.time()
+    nodo = Nodo(ambiente)
+    queue = PriorityQueue()  # Usar una cola de prioridad para almacenar nodos a explorar
+    queue.put((0, nodo))  # Insertar el nodo inicial en la cola de prioridad con costo 0
+    
+    explorados = set()  # Conjunto para almacenar estados explorados
+    nodos_expandidos = []  # Lista para almacenar los nodos expandidos 
+    
+    while not queue.empty():
+        _, nodo_actual = queue.get()  # Obtener el nodo con el menor costo de la cola
+        
+        if es_nodo_meta(nodo_actual):
+            tiempo_total = time.time() - inicio
+            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total
+         
+        estado_actual = str(nodo_actual.estado.matriz)  # Convertir la matriz a una cadena para usarla como clave
+        
+        if estado_actual in explorados or evitar_ciclos(nodo_actual):
+            continue  # Evitar nodos ya explorados y ciclos
+        
+        explorados.add(estado_actual)  # Agregar el estado actual al conjunto de explorados
+        nodos_expandidos.append(nodo_actual)  # Agregar el nodo actual a la lista de nodos expandidos
+        
+        for accion in nodo_actual.estado.mando.get_movimientos_posibles(nodo_actual.estado.matriz):
+            nuevo_estado = nodo_actual.estado.copy()
+            nuevo_estado.transicion(accion)
+            nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1)
+            
+            # Calcular el costo acumulado desde el nodo inicial hasta el nodo actual
+            costo_acumulado = nodo_actual.costo + 1
+            
+            # Calcular la heurística desde el nodo actual hasta el nodo objetivo
+            heuristica_estimada = heuristica(nuevo_nodo)
+            
+            # Calcular el costo total del nuevo nodo
+            costo_total = costo_acumulado + heuristica_estimada
+            
+            queue.put((costo_total, nuevo_nodo))  # Insertar el nuevo nodo en la cola de prioridad
+    
+    return [], "No se encontró", nodos_expandidos
 
-# Ejemplo de uso
-ambiente = Ambiente()
-ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-ambiente.asignar_objetos()
-# Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
-# Obtenemos los movimientos posibles para el Mando en la posición actual
-movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
-
-# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
-accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
-
-# Aplicamos la acción y obtenemos un nuevo estado del ambiente
-movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
-for movimiento in movimientos:
-    ambiente.transicion(movimiento)
-    ambiente.mostrar_ambiente()
-    print()
-# Ahora podemos verificar el estado del nuevo ambiente
-# Cargar el ambiente desde el archivo
+# # Ejemplo de uso
 # ambiente = Ambiente()
 # ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-# #print(heuristica(Nodo(ambiente)))
+# ambiente.asignar_objetos()
+# # Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
-# # Realizar la búsqueda DFS
-# camino, mensaje, nodos_expandidos, profundidad , tiempo_total = busqueda_avara(ambiente)  # Modifica esta línea
+# # Obtenemos los movimientos posibles para el Mando en la posición actual
+# movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
 
-# print("Camino encontrado:", camino)
-# print("Mensaje:", mensaje)
-# print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
-# print("Tiempo de ejecución:", tiempo_total)
-# print("Profundidad:", profundidad)
-# #print("Costo", costo)
+# # Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
+# accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
+
+# # Aplicamos la acción y obtenemos un nuevo estado del ambiente
+# movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
+# for movimiento in movimientos:
+#     ambiente.transicion(movimiento)
+#     ambiente.mostrar_ambiente()
+#     print()
+# Ahora podemos verificar el estado del nuevo ambiente
+# Cargar el ambiente desde el archivo
+ambiente = Ambiente()
+ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+print(heuristica(Nodo(ambiente)))
+
+# Realizar la búsqueda DFS
+camino, mensaje, nodos_expandidos, profundidad , tiempo_total = a_estrella(ambiente)  # Modifica esta línea
+
+print("Camino encontrado:", camino)
+print("Mensaje:", mensaje)
+print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
+print("Tiempo de ejecución:", tiempo_total)
+print("Profundidad:", profundidad)
+#print("Costo", costo)
