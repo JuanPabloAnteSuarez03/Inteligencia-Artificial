@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication
 import subprocess
 
 class Ui_Bienvenida(object):
@@ -57,12 +58,14 @@ class Ui_Bienvenida(object):
     def abrir_siguiente(self):
         # Ejecutar "Mando y Grogu.py" usando subprocess
         subprocess.Popen(["python", "vista/ventanaInicio.py"])
-
-if __name__ == "__main__":
+         # Ocultar la ventana actual
+        app = QApplication.instance()
+        app.activeWindow().hide()
+"""if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     Bienvenida = QtWidgets.QMainWindow()
     ui = Ui_Bienvenida()
     ui.setupUi(Bienvenida)
     Bienvenida.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())"""
