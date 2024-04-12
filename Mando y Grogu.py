@@ -2,6 +2,7 @@ import math
 import time
 from vista.cuadricula import *
 
+
 def encontrar_fila_mandalorian(matriz):
     for fila_index, fila in enumerate(matriz):
         for elemento in fila:

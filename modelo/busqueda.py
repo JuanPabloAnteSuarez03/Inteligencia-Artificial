@@ -248,10 +248,92 @@ accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
 
 # Aplicamos la acción y obtenemos un nuevo estado del ambiente
 movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
+
+
+image_paths = {
+        1: "imagenes/negro.png",
+        2: "imagenes/mandalorian.png",
+        3: "imagenes/nave.png",
+        4: "imagenes/darthVader.png",
+        5: "imagenes/grogu.png",
+        6: "imagenes/mandalorian_y_grogu.png"
+    }
+
+
+
+import tkinter as tk
+import time
+
+class PacmanGUI:
+    def __init__(self, root, matrix_size):
+        self.root = root
+        self.matrix_size = matrix_size
+        self.canvas = tk.Canvas(root, width=matrix_size*30, height=matrix_size*30, bg='black')
+        self.canvas.pack()
+        self.images = {}  # Un diccionario para almacenar las imágenes cargadas
+        self.load_images()  # Carga las imágenes
+        self.draw_matrix([[0]*matrix_size]*matrix_size)
+
+    def load_images(self):
+        # Carga las imágenes desde las rutas proporcionadas y almacénalas en el diccionario self.images
+        for key, path in image_paths.items():
+            self.images[key] = tk.PhotoImage(file=path)
+
+    def draw_matrix(self, matrix):
+        self.canvas.delete("all")
+        cell_size = 30
+        image_padding = 2  # Ajusta este valor según sea necesario para el espaciado deseado
+
+    def draw_matrix(self, matrix):
+        self.canvas.delete("all")
+        cell_size = 30
+
+        for i in range(self.matrix_size):
+            for j in range(self.matrix_size):
+                x0, y0 = j * cell_size, i * cell_size
+                x1, y1 = x0 + cell_size, y0 + cell_size
+                if matrix[i][j] in self.images:
+                    # Obtiene la imagen y ajusta su tamaño al tamaño de la celda
+                    image = self.images[matrix[i][j]]
+                    image_width, image_height = image.width(), image.height()
+                    scale_factor = min(cell_size / image_width, cell_size / image_height)
+                    new_width = int(image_width * scale_factor)
+                    new_height = int(image_height * scale_factor)
+                    # Calcula las coordenadas para centrar la imagen en la celda
+                    image_x0 = x0 + (cell_size - new_width) / 2
+                    image_y0 = y0 + (cell_size - new_height) / 2
+                    # Dibuja la imagen ajustada y centrada
+                    self.canvas.create_image(image_x0, image_y0, anchor='nw', image=image)
+                else:
+                    color = "white" if matrix[i][j] == 0 else "blue"
+                    self.canvas.create_rectangle(x0, y0, x1, y1, fill=color)
+
+
+
+
+
+# Luego, cuando creas una instancia de PacmanGUI, asegúrate de pasar el diccionario de rutas de imágenes
+            
+# Example usage
+root = tk.Tk()
+pacman_gui = PacmanGUI(root, matrix_size=len(ambiente.matriz))
+
 for movimiento in movimientos:
     ambiente.transicion(movimiento)
     ambiente.mostrar_ambiente()
-    print()
+    pacman_gui.draw_matrix(ambiente.matriz)
+    root.update()
+    time.sleep(0.5)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 # Ahora podemos verificar el estado del nuevo ambiente
 # Cargar el ambiente desde el archivo
 # ambiente = Ambiente()
