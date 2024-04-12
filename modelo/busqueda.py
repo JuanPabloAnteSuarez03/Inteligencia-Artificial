@@ -176,43 +176,30 @@ def heuristica(nodo):
     distancia_manhattan_mando_grogu = abs(nodo.estado.mando.fila - nodo.estado.grogu.fila) + abs(nodo.estado.mando.columna - nodo.estado.grogu.columna)
     naves = nodo.estado.naves
     enemigos = nodo.estado.enemigos
-    distancias_nave_grogu = []
-    distancias_nave_mando = []
-    distancias_enemigos_mando = []
     
-    if enemigos or naves:    
-        if nodo.estado.naves:
-            for nave in naves:
-                distancia_manhattan_naves_grogu = abs(nave.fila - nodo.estado.grogu.fila) + abs(nave.columna - nodo.estado.grogu.columna)
-                distancia_manhattan_naves_mando = abs(nave.fila - nodo.estado.mando.fila) + abs(nave.columna - nodo.estado.mando.columna)
-                distancias_nave_grogu.append(distancia_manhattan_naves_grogu)
-                distancias_nave_mando.append(distancia_manhattan_naves_mando)
-                
-            for enemigo in enemigos:
-                distancia_manhattan_enemigos_mando = abs(enemigo.fila - nodo.estado.mando.fila) + abs(enemigo.columna - nodo.estado.mando.columna)
-                # Penalizar si el nodo está sobre un enemigo
-                if enemigo.fila == nodo.estado.mando.fila and enemigo.columna == nodo.estado.mando.columna:
-                    distancias_enemigos_mando.append(distancia_manhattan_enemigos_mando + 10)  # Incrementar la penalización
-                else:
-                    distancias_enemigos_mando.append(distancia_manhattan_enemigos_mando)
-                    
-            if min(distancias_enemigos_mando) <= min(distancias_nave_mando):
-                distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu) + 5          
-            elif min(distancias_nave_grogu) <= 10:
-                distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu) * 0.5
-            else:
-                distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu) - 5
-            return distancia_desde_nave
+    if naves or enemigos:
+        distancias_nave_grogu = []
+        distancias_nave_mando = []
+        for nave in naves:
+            distancia_manhattan_nave_grogu = abs(nave.fila - nodo.estado.grogu.fila) + abs(nave.columna - nodo.estado.grogu.columna)
+            distancia_manhattan_nave_mando = abs(nave.fila - nodo.estado.mando.fila) + abs(nave.columna - nodo.estado.mando.columna)
+            distancias_nave_grogu.append(distancia_manhattan_nave_grogu)
+            distancias_nave_mando.append(distancia_manhattan_nave_mando)
         
-        elif es_nave(nodo):
-            if distancia_manhattan_mando_grogu <= 10:
-                distancia_desde_nave = distancia_manhattan_mando_grogu * 0.5
-            else:
-                distancia_desde_nave = distancia_manhattan_mando_grogu - 5
-            return distancia_desde_nave
+        distancia_desde_nave = min(distancias_nave_mando) + min(distancias_nave_grogu)
+        
+        if min(distancias_nave_grogu) <= 5:
+            distancia_desde_nave -= 5
+        
+        # Penalizar si el Mando está en una posición ocupada por un enemigo
+        mando_posicion = nodo.estado.mando.get_posicion()
+        for enemigo in enemigos:
+            if enemigo.get_posicion() == mando_posicion:
+                distancia_desde_nave += 10
+        
+        return distancia_desde_nave
     
     return distancia_manhattan_mando_grogu
-
 
 
 def busqueda_avara(ambiente):
@@ -229,7 +216,7 @@ def busqueda_avara(ambiente):
         
         if es_nodo_meta(nodo_actual):
             tiempo_total = time.time() - inicio
-            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total
+            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total, nodo_actual.costo
          
         estado_actual = str(nodo_actual.estado.matriz)  # Convertir la matriz a una cadena para usarla como clave
         
@@ -242,7 +229,18 @@ def busqueda_avara(ambiente):
         for accion in nodo_actual.estado.mando.get_movimientos_posibles(nodo_actual.estado.matriz):
             nuevo_estado = nodo_actual.estado.copy()
             nuevo_estado.transicion(accion)
-            nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1)
+            if es_nave(nodo_actual) and not es_enemigo(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 1/2, nodo_actual.contador_pasos + 1, True, nodo_actual.paso_por_enemigo)
+                if nuevo_nodo.contador_pasos >= 10:
+                    nuevo_nodo.paso_por_nave = False
+                    nuevo_nodo.contador_pasos = 0
+
+            if es_nave(nodo_actual) and es_enemigo(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 1/2, nodo_actual.contador_pasos, nodo_actual.paso_por_nave, nodo_actual.paso_por_enemigo)
+            elif es_enemigo(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 5, nodo_actual.contador_pasos, nodo_actual.paso_por_nave, nodo_actual.paso_por_enemigo)
+            if not es_enemigo(nodo_actual) and not es_nave(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 1, nodo_actual.contador_pasos, nodo_actual.paso_por_nave, nodo_actual.paso_por_enemigo)
             queue.put((heuristica(nuevo_nodo), nuevo_nodo))  # Insertar el nuevo nodo en la cola de prioridad
     
     return [], "No se encontró", nodos_expandidos
@@ -261,7 +259,7 @@ def a_estrella(ambiente):
         
         if es_nodo_meta(nodo_actual):
             tiempo_total = time.time() - inicio
-            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total
+            return reconstruir_camino(nodo_actual), "Se encontró", nodos_expandidos, nodo_actual.profundidad, tiempo_total, nodo_actual.costo
          
         estado_actual = str(nodo_actual.estado.matriz)  # Convertir la matriz a una cadena para usarla como clave
         
@@ -274,7 +272,18 @@ def a_estrella(ambiente):
         for accion in nodo_actual.estado.mando.get_movimientos_posibles(nodo_actual.estado.matriz):
             nuevo_estado = nodo_actual.estado.copy()
             nuevo_estado.transicion(accion)
-            nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1)
+            if es_nave(nodo_actual) and not es_enemigo(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 1/2, nodo_actual.contador_pasos + 1, True, nodo_actual.paso_por_enemigo)
+                if nuevo_nodo.contador_pasos >= 10:
+                    nuevo_nodo.paso_por_nave = False
+                    nuevo_nodo.contador_pasos = 0
+
+            if es_nave(nodo_actual) and es_enemigo(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 1/2, nodo_actual.contador_pasos, nodo_actual.paso_por_nave, nodo_actual.paso_por_enemigo)
+            elif es_enemigo(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 5, nodo_actual.contador_pasos, nodo_actual.paso_por_nave, nodo_actual.paso_por_enemigo)
+            if not es_enemigo(nodo_actual) and not es_nave(nodo_actual):
+                nuevo_nodo = Nodo(nuevo_estado, nodo_actual, accion, nodo_actual.profundidad + 1, nodo_actual.costo + 1, nodo_actual.contador_pasos, nodo_actual.paso_por_nave, nodo_actual.paso_por_enemigo)
             
             # Calcular el costo acumulado desde el nodo inicial hasta el nodo actual
             costo_acumulado = nodo_actual.costo + 1
@@ -284,7 +293,7 @@ def a_estrella(ambiente):
             
             # Calcular el costo total del nuevo nodo
             costo_total = costo_acumulado + heuristica_estimada
-            
+            print(costo_total)
             queue.put((costo_total, nuevo_nodo))  # Insertar el nuevo nodo en la cola de prioridad
     
     return [], "No se encontró", nodos_expandidos
@@ -294,11 +303,17 @@ ambiente = Ambiente()
 ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
 ambiente.asignar_objetos()
 
+# Obtenemos los movimientos posibles para el Mando en la posición actual
+movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
+
+# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
+accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
+
+# Aplicamos la acción y obtenemos un nuevo estado del ambiente
+movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
+
+
 def ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos):
-    
-    ambiente = Ambiente()
-    ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-    ambiente.asignar_objetos()
     # Crear una instancia de la clase Cuadricula
     root = tk.Tk()
     cuadricula = Cuadricula(root, width=500, height=500)
@@ -337,11 +352,11 @@ def ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos):
 print(heuristica(Nodo(ambiente)))
 
 # Realizar la búsqueda DFS
-camino, mensaje, nodos_expandidos, profundidad , tiempo_total = a_estrella(ambiente)  # Modifica esta línea
+camino, mensaje, nodos_expandidos, profundidad , tiempo_total, costo = busqueda_avara(ambiente)  # Modifica esta línea
 
 print("Camino encontrado:", camino)
 print("Mensaje:", mensaje)
 print("Nodos expandidos:", len(nodos_expandidos))  # Agrega esta línea para mostrar los nodos expandidos
 print("Tiempo de ejecución:", tiempo_total)
 print("Profundidad:", profundidad)
-#print("Costo", costo)
+print("Costo", costo)
