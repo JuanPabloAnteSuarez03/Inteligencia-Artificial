@@ -304,25 +304,27 @@ ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
 ambiente.asignar_objetos()
 
 def ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos):
+    try:
+        ambiente = Ambiente()
+        ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+        ambiente.asignar_objetos()
+        # Crear una instancia de la clase Cuadricula
+        root = tk.Tk()
+        cuadricula = Cuadricula(root, width=500, height=500)
 
-    ambiente = Ambiente()
-    ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-    ambiente.asignar_objetos()
-    # Crear una instancia de la clase Cuadricula
-    root = tk.Tk()
-    cuadricula = Cuadricula(root, width=500, height=500)
-
-    # Llama al método para actualizar el lienzo con la nueva matriz del ambiente
-    cuadricula.actualizar_canvas(ambiente.matriz)
-
-    for movimiento in movimientos:
-        ambiente.transicion(movimiento)
-        ambiente.mostrar_ambiente()
+        # Llama al método para actualizar el lienzo con la nueva matriz del ambiente
         cuadricula.actualizar_canvas(ambiente.matriz)
-        root.update()
-        time.sleep(0.5)
 
-    root.mainloop()
+        for movimiento in movimientos:
+            ambiente.transicion(movimiento)
+            ambiente.mostrar_ambiente()
+            cuadricula.actualizar_canvas(ambiente.matriz)
+            root.update()
+            time.sleep(0.5)
+
+        root.mainloop()
+    except tk.TclError:
+        print("La ventana de la cuadrícula se cerró inesperadamente.")
 
 
 # # Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"

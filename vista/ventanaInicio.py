@@ -8,6 +8,7 @@ from tkinter import messagebox
 from busqueda import *
 from cuadricula import *
 import subprocess
+from functools import partial
 
 class Ui_Busqueda(object):
     def setupUi(self, Busqueda):
