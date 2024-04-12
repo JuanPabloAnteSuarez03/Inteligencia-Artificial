@@ -128,14 +128,14 @@ class VentanaInicio(QtWidgets.QMainWindow):
         self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo, costo)
 
     def ejecutar_busqueda_avara(self):
-        movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_avara(ambiente)
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo, costo = busqueda_avara(ambiente)
         ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
-        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo, costo)
     
     def ejecutar_busqueda_a(self):
-        movimientos, mensaje, nodos_expandidos, profundidad, tiempo = a_estrella(ambiente)
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo, costo = a_estrella(ambiente)
         ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
-        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo, costo)
 
     def mostrar_resultados(self, mensaje, nodos_expandidos, profundidad, tiempo, costo=None):
         resultados = f"Mensaje: {mensaje}\nProfundidad: {profundidad}\nTiempo de ejecución: {tiempo}"

@@ -303,17 +303,11 @@ ambiente = Ambiente()
 ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
 ambiente.asignar_objetos()
 
-# Obtenemos los movimientos posibles para el Mando en la posición actual
-movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
-
-# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
-accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
-
-# Aplicamos la acción y obtenemos un nuevo estado del ambiente
-movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
-
-
 def ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos):
+
+    ambiente = Ambiente()
+    ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+    ambiente.asignar_objetos()
     # Crear una instancia de la clase Cuadricula
     root = tk.Tk()
     cuadricula = Cuadricula(root, width=500, height=500)
