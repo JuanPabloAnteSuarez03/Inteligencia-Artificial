@@ -290,10 +290,38 @@ def a_estrella(ambiente):
     return [], "No se encontró", nodos_expandidos
 
 
+ambiente = Ambiente()
+ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+ambiente.asignar_objetos()
 
-# ambiente = Ambiente()
-# ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
-# ambiente.asignar_objetos()
+# Obtenemos los movimientos posibles para el Mando en la posición actual
+movimientos_posibles = ambiente.mando.get_movimientos_posibles(ambiente.matriz)
+
+# Supongamos que queremos mover al Mando hacia arriba, y esa acción está en la lista de movimientos posibles
+accion = movimientos_posibles[0]  # Por ejemplo, el primer movimiento posible
+
+# Aplicamos la acción y obtenemos un nuevo estado del ambiente
+movimientos, mensaje, nodos_expandidos, profundidad, tiempo  = busqueda_amplitud(ambiente)
+
+
+def ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos):
+    # Crear una instancia de la clase Cuadricula
+    root = tk.Tk()
+    cuadricula = Cuadricula(root, width=500, height=500)
+
+    # Llama al método para actualizar el lienzo con la nueva matriz del ambiente
+    cuadricula.actualizar_canvas(ambiente.matriz)
+
+    for movimiento in movimientos:
+        ambiente.transicion(movimiento)
+        ambiente.mostrar_ambiente()
+        cuadricula.actualizar_canvas(ambiente.matriz)
+        root.update()
+        time.sleep(0.5)
+
+    root.mainloop()
+
+
 # # Suponiendo que ya has creado un objeto de la clase Ambiente llamado "ambiente"
 
 # # Obtenemos los movimientos posibles para el Mando en la posición actual
@@ -310,8 +338,8 @@ def a_estrella(ambiente):
 #     print()
 # Ahora podemos verificar el estado del nuevo ambiente
 # Cargar el ambiente desde el archivo
-ambiente = Ambiente()
-ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
+#ambiente = Ambiente()
+#ambiente.cargar_desde_archivo(r'modelo\ambiente.txt')
 print(heuristica(Nodo(ambiente)))
 
 # Realizar la búsqueda DFS
