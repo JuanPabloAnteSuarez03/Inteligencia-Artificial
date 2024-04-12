@@ -110,6 +110,7 @@ class VentanaInicio(QtWidgets.QMainWindow):
         self.ui.boton_amplitud.clicked.connect(self.ejecutar_busqueda_amplitud)
         self.ui.boton_costo.clicked.connect(self.ejecutar_busqueda_costo_uniforme)
         self.ui.boton_avara.clicked.connect(self.ejecutar_busqueda_avara)
+        self.ui.boton_a.clicked.connect(self.ejecutar_busqueda_a)
 
     def ejecutar_busqueda_profundidad(self):
         movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_profundidad(ambiente)
@@ -128,6 +129,11 @@ class VentanaInicio(QtWidgets.QMainWindow):
 
     def ejecutar_busqueda_avara(self):
         movimientos, mensaje, nodos_expandidos, profundidad, tiempo = busqueda_avara(ambiente)
+        ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
+        self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
+    
+    def ejecutar_busqueda_a(self):
+        movimientos, mensaje, nodos_expandidos, profundidad, tiempo = a_estrella(ambiente)
         ejecutar_busqueda_y_mostrar_cuadricula(ambiente, movimientos)
         self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo)
 
