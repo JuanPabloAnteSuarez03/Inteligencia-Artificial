@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import subprocess
 
 class Ui_Busqueda(object):
     def setupUi(self, Busqueda):
@@ -49,6 +50,15 @@ class Ui_Busqueda(object):
         self.boton_a.setGeometry(QtCore.QRect(420, 180, 141, 61))
         self.boton_a.setStyleSheet("background:rgb(255, 255, 255); font-size: 11pt;")
         self.boton_a.setObjectName("boton_a")
+
+        # EJEMPLO"
+        self.boton_mando_grogu = QtWidgets.QPushButton(self.frame)
+        self.boton_mando_grogu.setGeometry(QtCore.QRect(420, 340, 141, 61))
+        self.boton_mando_grogu.setStyleSheet("background:rgb(255, 255, 255); font-size: 11pt;")
+        self.boton_mando_grogu.setObjectName("boton_mando_grogu")
+        self.boton_mando_grogu.setText("Ejemplo")
+        self.boton_mando_grogu.clicked.connect(self.abrir_mando_y_grogu)
+
         Busqueda.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Busqueda)
@@ -65,6 +75,10 @@ class Ui_Busqueda(object):
         self.boton_avara.setText(_translate("Busqueda", "AVARA"))
         self.label_informada.setText(_translate("Busqueda", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; color:white;\">INFORMADA</span></p></body></html>"))
         self.boton_a.setText(_translate("Busqueda", "A*"))
+
+    def abrir_mando_y_grogu(self):
+        # Ejecutar "Mando y Grogu.py" usando subprocess
+        subprocess.Popen(["python", "Mando y Grogu.py"])
 
 if __name__ == "__main__":
     import sys
