@@ -120,7 +120,7 @@ class VentanaInicio(QtWidgets.QMainWindow):
         self.mostrar_resultados(mensaje, nodos_expandidos, profundidad, tiempo, costo)
 
     def mostrar_resultados(self, mensaje, nodos_expandidos, profundidad, tiempo, costo=None):
-        resultados = f"Mensaje: {mensaje}\nProfundidad: {profundidad}\nTiempo de ejecución: {tiempo}"
+        resultados = f"Mensaje: {mensaje}\nProfundidad: {profundidad}\nNodos expandidos: {len(nodos_expandidos)}\nTiempo de ejecución: {tiempo}"
         if costo is not None:
             resultados += f"\nCosto: {costo}"
         QtWidgets.QMessageBox.information(self, "Resultados", resultados) 
